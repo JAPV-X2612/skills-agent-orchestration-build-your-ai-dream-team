@@ -1,0 +1,28 @@
+{
+  "projects": [
+    {
+      "name": "Contributor Portal",
+      "owner": "Avery Chen",
+      "status": "Active",
+      "recentActivity": "Updated the contributor onboarding flow and is testing the new welcome checklist.",
+      "priority": "High",
+      "summary": "Review the onboarding checklist and share feedback on the first-run experience."
+    },
+    {
+      "name": "Docs Refresh",
+      "owner": "Jordan Lee",
+      "status": "In progress",
+      "recentActivity": "Reviewing navigation labels and the setup guide with the documentation group.",
+      "priority": "Medium",
+      "summary": "Check the revised setup steps and flag any gaps before the navigation review."
+    },
+    {
+      "name": "Release Readiness",
+      "owner": "Sam Rivera",
+      "status": "At risk",
+      "recentActivity": "Waiting on a dependency update before the final verification task can begin.",
+      "priority": "High",
+      "summary": "Help verify the release checklist and surface blockers while the dependency is pending."
+    }
+  ]
+}
