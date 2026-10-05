@@ -1,0 +1,50 @@
+# Operating system files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+
+# IDE and local editor settings
+.idea/
+*.iml
+.fleet/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build and generated output
+dist/
+build/
+out/
+coverage/
+.cache/
+.parcel-cache/
+.vite/
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
+*.seed
+
+# Temporary and swap files
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Python cache files (for local tooling)
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
