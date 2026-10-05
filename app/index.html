@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="page-header">
+        <p class="eyebrow">Contributor workspace</p>
+        <h1>Project Pulse</h1>
+        <p class="intro">A quick view of what is moving, what needs attention, and how you can help.</p>
+      </header>
+
+      <section class="dashboard" aria-labelledby="projects-heading">
+        <div class="dashboard-heading">
+          <div>
+            <h2 id="projects-heading">Project overview</h2>
+            <p id="project-count">Loading projects…</p>
+          </div>
+        </div>
+        <div id="project-status" class="message" role="status" aria-live="polite">
+          Loading the latest project details…
+        </div>
+        <div id="project-list" class="project-list" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var requiredFields = ["name", "owner", "status", "recentActivity", "priority"];
+        var projectList = document.getElementById("project-list");
+        var projectStatus = document.getElementById("project-status");
+        var projectCount = document.getElementById("project-count");
+
+        function text(value) {
+          var node = document.createElement("span");
+          node.textContent = String(value);
+          return node;
+        }
+
+        function validProject(project) {
+          return project && typeof project === "object" &&
+            requiredFields.every(function (field) {
+              return typeof project[field] === "string" && project[field].trim().length > 0;
+            }) &&
+            typeof project.summary === "string" && project.summary.trim().length > 0;
+        }
+
+        function badgeClass(value, type) {
+          var normalized = value.toLowerCase().replace(/\s+/g, "-");
+          var allowed = type === "status"
+            ? ["active", "in-progress", "at-risk"]
+            : ["high", "medium", "low"];
+          return allowed.indexOf(normalized) !== -1 ? normalized : "unknown";
+        }
+
+        function labeledValue(label, value, className) {
+          var item = document.createElement("div");
+          item.className = "project-meta-item";
+          var labelElement = document.createElement("dt");
+          labelElement.textContent = label;
+          var valueElement = document.createElement("dd");
+          if (className) {
+            valueElement.className = className;
+          }
+          valueElement.appendChild(text(value));
+          item.appendChild(labelElement);
+          item.appendChild(valueElement);
+          return item;
+        }
+
+        function renderProjects(projects) {
+          projectList.replaceChildren();
+          projects.forEach(function (project) {
+            var card = document.createElement("article");
+            card.className = "project-card";
+
+            var heading = document.createElement("h3");
+            heading.appendChild(text(project.name));
+
+            var summary = document.createElement("p");
+            summary.className = "project-summary";
+            summary.appendChild(text(project.summary));
+
+            var activityHeading = document.createElement("h4");
+            activityHeading.textContent = "Recent activity";
+            var activity = document.createElement("p");
+            activity.className = "project-activity";
+            activity.appendChild(text(project.recentActivity));
+
+            var metadata = document.createElement("dl");
+            metadata.className = "project-meta";
+            metadata.appendChild(labeledValue("Owner", project.owner));
+            metadata.appendChild(labeledValue("Status", project.status, "badge status-" + badgeClass(project.status, "status")));
+            metadata.appendChild(labeledValue("Priority", project.priority, "badge priority-" + badgeClass(project.priority, "priority")));
+
+            card.appendChild(heading);
+            card.appendChild(summary);
+            card.appendChild(activityHeading);
+            card.appendChild(activity);
+            card.appendChild(metadata);
+            projectList.appendChild(card);
+          });
+        }
+
+        fetch("project-data.json", { cache: "no-store" })
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error("Project data could not be loaded.");
+            }
+            return response.json();
+          })
+          .then(function (data) {
+            if (!data || !Array.isArray(data.projects)) {
+              throw new Error("Project data is missing its projects list.");
+            }
+            var projects = data.projects.filter(validProject);
+            if (projects.length === 0) {
+              projectCount.textContent = "No projects are available right now.";
+              projectStatus.textContent = "There are no project updates to display.";
+              projectStatus.className = "message message-warning";
+              return;
+            }
+            renderProjects(projects);
+            projectCount.textContent = projects.length + (projects.length === 1 ? " project" : " projects") + " in view";
+            projectStatus.hidden = true;
+          })
+          .catch(function (error) {
+            projectCount.textContent = "Project overview unavailable";
+            projectStatus.textContent = error.message + " Please try again shortly.";
+            projectStatus.className = "message message-error";
+          });
+      }());
+    </script>
+  </body>
+</html>
